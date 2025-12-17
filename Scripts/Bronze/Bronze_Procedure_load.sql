@@ -67,10 +67,10 @@ BEGIN
 
         -- 2. Table: olist_customers_dataset
         SET @start_time = GETDATE();
-		PRINT '>> Truncating Table: Bronze.olist_customers_dataset';
-		TRUNCATE TABLE Bronze.olist_customers_dataset;
-		PRINT '>> Inserting Data Into: Bronze.olist_customers_dataset';
-		BULK INSERT Bronze.olist_customers_dataset
+		PRINT '>> Truncating Table: Bronze.olist_customers';
+		TRUNCATE TABLE Bronze.olist_customers;
+		PRINT '>> Inserting Data Into: Bronze.olist_customers';
+		BULK INSERT Bronze.olist_customers
 		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_customers_dataset.csv'
 		WITH (
 			FIRSTROW = 2,
@@ -84,10 +84,10 @@ BEGIN
 
         -- 3. Table: olist_orders_dataset
         SET @start_time = GETDATE();
-		PRINT '>> Truncating Table: Bronze.olist_orders_dataset';
-		TRUNCATE TABLE Bronze.olist_orders_dataset;
-		PRINT '>> Inserting Data Into: Bronze.olist_orders_dataset';
-		BULK INSERT Bronze.olist_orders_dataset
+		PRINT '>> Truncating Table: Bronze.olist_orders';
+		TRUNCATE TABLE Bronze.olist_orders;
+		PRINT '>> Inserting Data Into: Bronze.olist_orders';
+		BULK INSERT Bronze.olist_orders
 		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_orders_dataset.csv'
 		WITH (
 			FIRSTROW = 2,
@@ -101,10 +101,10 @@ BEGIN
 
         -- 4. Table: olist_order_items_dataset
         SET @start_time = GETDATE();
-		PRINT '>> Truncating Table: Bronze.olist_order_items_dataset';
-		TRUNCATE TABLE Bronze.olist_order_items_dataset;
-		PRINT '>> Inserting Data Into: Bronze.olist_order_items_dataset';
-		BULK INSERT Bronze.olist_order_items_dataset
+		PRINT '>> Truncating Table: Bronze.olist_order_items';
+		TRUNCATE TABLE Bronze.olist_order_items;
+		PRINT '>> Inserting Data Into: Bronze.olist_order_items';
+		BULK INSERT Bronze.olist_order_items
 		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_order_items_dataset.csv'
 		WITH (
 			FIRSTROW = 2,
@@ -116,12 +116,12 @@ BEGIN
 		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
 		PRINT '>> -------------';
 
-        -- 5. Table: olist_products_dataset
+        -- 5. Table: olist_products
         SET @start_time = GETDATE();
-		PRINT '>> Truncating Table: Bronze.olist_products_dataset';
-		TRUNCATE TABLE Bronze.olist_products_dataset;
-		PRINT '>> Inserting Data Into: Bronze.olist_products_dataset';
-		BULK INSERT Bronze.olist_products_dataset
+		PRINT '>> Truncating Table: Bronze.olist_products';
+		TRUNCATE TABLE Bronze.olist_products;
+		PRINT '>> Inserting Data Into: Bronze.olist_products';
+		BULK INSERT Bronze.olist_products
 		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_products_dataset.csv'
 		WITH (
 			FIRSTROW = 2,
@@ -133,12 +133,12 @@ BEGIN
 		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
 		PRINT '>> -------------';
 
-        -- 6. Table: olist_order_payments_dataset
+        -- 6. Table: olist_order_payments
         SET @start_time = GETDATE();
-		PRINT '>> Truncating Table: Bronze.olist_order_payments_dataset';
-		TRUNCATE TABLE Bronze.olist_order_payments_dataset;
-		PRINT '>> Inserting Data Into: Bronze.olist_order_payments_dataset';
-		BULK INSERT Bronze.olist_order_payments_dataset
+		PRINT '>> Truncating Table: Bronze.olist_order_payments';
+		TRUNCATE TABLE Bronze.olist_order_payments;
+		PRINT '>> Inserting Data Into: Bronze.olist_order_payments';
+		BULK INSERT Bronze.olist_order_payments
 		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_order_payments_dataset.csv'
 		WITH (
 			FIRSTROW = 2,
@@ -152,10 +152,10 @@ BEGIN
 
         -- 7. Table: olist_order_reviews_dataset
         SET @start_time = GETDATE();
-		PRINT '>> Truncating Table: Bronze.olist_order_reviews_dataset';
-		TRUNCATE TABLE Bronze.olist_order_reviews_dataset;
-		PRINT '>> Inserting Data Into: Bronze.olist_order_reviews_dataset';
-		BULK INSERT Bronze.olist_order_reviews_dataset
+		PRINT '>> Truncating Table: Bronze.olist_order_reviews';
+		TRUNCATE TABLE Bronze.olist_order_reviews;
+		PRINT '>> Inserting Data Into: Bronze.olist_order_reviews';
+		BULK INSERT Bronze.olist_order_reviews
 		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_order_reviews_dataset.csv'
 		WITH (
 			FIRSTROW = 2,
@@ -169,10 +169,10 @@ BEGIN
 
         -- 8. Table: olist_sellers_dataset
         SET @start_time = GETDATE();
-		PRINT '>> Truncating Table: Bronze.olist_sellers_dataset';
-		TRUNCATE TABLE Bronze.olist_sellers_dataset;
-		PRINT '>> Inserting Data Into: Bronze.olist_sellers_dataset';
-		BULK INSERT Bronze.olist_sellers_dataset
+		PRINT '>> Truncating Table: Bronze.olist_sellers';
+		TRUNCATE TABLE Bronze.olist_sellers;
+		PRINT '>> Inserting Data Into: Bronze.olist_sellers';
+		BULK INSERT Bronze.olist_sellers
 		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_sellers_dataset.csv'
 		WITH (
 			FIRSTROW = 2,
@@ -186,10 +186,10 @@ BEGIN
 
         -- 9. Table: olist_geolocation_dataset
         SET @start_time = GETDATE();
-		PRINT '>> Truncating Table: Bronze.olist_geolocation_dataset';
-		TRUNCATE TABLE Bronze.olist_geolocation_dataset;
-		PRINT '>> Inserting Data Into: Bronze.olist_geolocation_dataset';
-		BULK INSERT Bronze.olist_geolocation_dataset
+		PRINT '>> Truncating Table: Bronze.olist_geolocation';
+		TRUNCATE TABLE Bronze.olist_geolocation;
+		PRINT '>> Inserting Data Into: Bronze.olist_geolocation';
+		BULK INSERT Bronze.olist_geolocation
 		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_geolocation_dataset.csv'
 		WITH (
 			FIRSTROW = 2,
