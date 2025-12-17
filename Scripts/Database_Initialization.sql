@@ -1,6 +1,10 @@
 /*
 # Olist Data Warehouse Automation Utility 🛠️
 
+* UTILITY SCRIPT: Environment Management & Cleaning
+   Description: Automates the reset process for DW layers based on industry best practices.
+   Note: Adapted from standard dynamic SQL maintenance patterns to ensure idempotency and safety.
+
 A robust, environment-aware SQL Server Stored Procedure designed to automate the maintenance, cleaning, and preparation of the **Olist Data Warehouse** layers (Bronze, Silver, and Gold). 
 
 This utility acts as a centralized control unit for Data Engineers to manage the ETL lifecycle safely across different environments (DEV, TEST, PROD).
