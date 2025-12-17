@@ -1,0 +1,216 @@
+/*
+## 🔄 2. Bronze Layer Data Ingestion (Stored Procedure)
+
+This script creates the stored procedure `Bronze.load_bronze`, which acts as the primary orchestration engine for ingesting raw data from local CSV files into the SQL Server Bronze tables.
+
+### 📝 Script Overview
+- **File:** `2_Load_Bronze_Data.sql`
+- **Procedure Name:** `Bronze.load_bronze`
+- **Operation Type:** Full Load (Truncate & Load)
+
+### 🚀 Key Technical Features
+* **High-Performance Bulk Loading:** Utilizes the `BULK INSERT` command combined with `TABLOCK` to minimize transaction logging and maximize insertion speed for large datasets.
+* **Execution Monitoring:** Tracks and prints the duration of each individual table load as well as the total batch execution time, providing immediate feedback on performance bottlenecks.
+* **Robust Error Handling:** Implements a `TRY...CATCH` block to gracefully handle runtime errors. If a failure occurs, it captures and reports the specific Error Number, State, and Message for easier debugging.
+* **Cross-Platform Compatibility:** Configured with `ROWTERMINATOR = '0x0a'` to correctly parse CSV files generated in Linux/Unix environments (common in Kaggle datasets).
+* **Data Freshness:** Performs a `TRUNCATE` operation before insertion to ensure the Bronze layer always reflects the exact state of the source files without duplication.
+
+### 📋 Ingestion Workflow
+The procedure iterates through the following 9 datasets:
+1. `product_category_name_translation`
+2. `olist_customers_dataset`
+3. `olist_orders_dataset`
+4. `olist_order_items_dataset`
+5. `olist_products_dataset`
+6. `olist_order_payments_dataset`
+7. `olist_order_reviews_dataset`
+8. `olist_sellers_dataset`
+9. `olist_geolocation_dataset`
+
+### ⚠️ Configuration Note
+The script currently uses hardcoded file paths (e.g., `D:\Data Engineering Projects\...`). Ensure these paths are updated to match your local environment or container volume mounts before execution.
+
+*/
+
+
+CREATE OR ALTER PROCEDURE Bronze.load_bronze AS
+BEGIN
+	DECLARE @start_time DATETIME, @end_time DATETIME, @batch_start_time DATETIME, @batch_end_time DATETIME; 
+	BEGIN TRY
+		SET @batch_start_time = GETDATE();
+		PRINT '================================================';
+		PRINT 'Loading Bronze Layer (Olist Dataset)';
+		PRINT '================================================';
+
+		PRINT '------------------------------------------------';
+		PRINT 'Loading E-Commerce Tables';
+		PRINT '------------------------------------------------';
+
+        -- 1. Table: product_category_name_translation
+		SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.product_category_name_translation';
+		TRUNCATE TABLE Bronze.product_category_name_translation;
+		PRINT '>> Inserting Data Into: Bronze.product_category_name_translation';
+		BULK INSERT Bronze.product_category_name_translation
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\product_category_name_translation.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a', -- Fix for Linux/Kaggle style line endings
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+        -- 2. Table: olist_customers_dataset
+        SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.olist_customers_dataset';
+		TRUNCATE TABLE Bronze.olist_customers_dataset;
+		PRINT '>> Inserting Data Into: Bronze.olist_customers_dataset';
+		BULK INSERT Bronze.olist_customers_dataset
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_customers_dataset.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a',
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+        -- 3. Table: olist_orders_dataset
+        SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.olist_orders_dataset';
+		TRUNCATE TABLE Bronze.olist_orders_dataset;
+		PRINT '>> Inserting Data Into: Bronze.olist_orders_dataset';
+		BULK INSERT Bronze.olist_orders_dataset
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_orders_dataset.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a',
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+        -- 4. Table: olist_order_items_dataset
+        SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.olist_order_items_dataset';
+		TRUNCATE TABLE Bronze.olist_order_items_dataset;
+		PRINT '>> Inserting Data Into: Bronze.olist_order_items_dataset';
+		BULK INSERT Bronze.olist_order_items_dataset
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_order_items_dataset.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a',
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+        -- 5. Table: olist_products_dataset
+        SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.olist_products_dataset';
+		TRUNCATE TABLE Bronze.olist_products_dataset;
+		PRINT '>> Inserting Data Into: Bronze.olist_products_dataset';
+		BULK INSERT Bronze.olist_products_dataset
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_products_dataset.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a',
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+        -- 6. Table: olist_order_payments_dataset
+        SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.olist_order_payments_dataset';
+		TRUNCATE TABLE Bronze.olist_order_payments_dataset;
+		PRINT '>> Inserting Data Into: Bronze.olist_order_payments_dataset';
+		BULK INSERT Bronze.olist_order_payments_dataset
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_order_payments_dataset.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a',
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+        -- 7. Table: olist_order_reviews_dataset
+        SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.olist_order_reviews_dataset';
+		TRUNCATE TABLE Bronze.olist_order_reviews_dataset;
+		PRINT '>> Inserting Data Into: Bronze.olist_order_reviews_dataset';
+		BULK INSERT Bronze.olist_order_reviews_dataset
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_order_reviews_dataset.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a',
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+        -- 8. Table: olist_sellers_dataset
+        SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.olist_sellers_dataset';
+		TRUNCATE TABLE Bronze.olist_sellers_dataset;
+		PRINT '>> Inserting Data Into: Bronze.olist_sellers_dataset';
+		BULK INSERT Bronze.olist_sellers_dataset
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_sellers_dataset.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a',
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+        -- 9. Table: olist_geolocation_dataset
+        SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: Bronze.olist_geolocation_dataset';
+		TRUNCATE TABLE Bronze.olist_geolocation_dataset;
+		PRINT '>> Inserting Data Into: Bronze.olist_geolocation_dataset';
+		BULK INSERT Bronze.olist_geolocation_dataset
+		FROM 'D:\Data Engineering Projects\Olist WareHouse & Dashbourd\Datasete\olist_geolocation_dataset.csv'
+		WITH (
+			FIRSTROW = 2,
+			FIELDTERMINATOR = ',',
+			ROWTERMINATOR = '0x0a',
+			TABLOCK
+		);
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
+
+		SET @batch_end_time = GETDATE();
+		PRINT '=========================================='
+		PRINT 'Loading Bronze Layer is Completed';
+        PRINT '   - Total Load Duration: ' + CAST(DATEDIFF(SECOND, @batch_start_time, @batch_end_time) AS NVARCHAR) + ' seconds';
+		PRINT '=========================================='
+	END TRY
+	BEGIN CATCH
+		PRINT '=========================================='
+		PRINT 'ERROR OCCURED DURING LOADING BRONZE LAYER'
+		PRINT 'Error Message: ' + ERROR_MESSAGE();
+		PRINT 'Error Number: ' + CAST (ERROR_NUMBER() AS NVARCHAR);
+		PRINT 'Error State: ' + CAST (ERROR_STATE() AS NVARCHAR);
+		PRINT '=========================================='
+	END CATCH
+END
