@@ -30,6 +30,8 @@ The procedure iterates through the following 9 datasets:
 ### ⚠️ Configuration Note
 The script currently uses hardcoded file paths (e.g., `D:\Data Engineering Projects\...`). Ensure these paths are updated to match your local environment or container volume mounts before execution.
 
+Usage Example:
+    EXEC Bronze.load_bronze;
 */
 
 
