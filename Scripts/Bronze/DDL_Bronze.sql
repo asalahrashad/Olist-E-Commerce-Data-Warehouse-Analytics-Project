@@ -28,7 +28,7 @@ The script initializes the following **9 datasets**:
 6. `olist_sellers_dataset`
 7. `olist_order_reviews_dataset`
 8. `olist_geolocation_dataset`
-9. `product_category_name_translation`
+9. `olist_product_category_name_translation`
 */
 
 Use Olist_DW;
@@ -54,13 +54,13 @@ CREATE TABLE Bronze.product_category_name_translation (
 GO
 
 -----------------------------------------------------------
--- 2. Table: olist_customers_dataset
+-- 2. Table: customers_dataset
 -----------------------------------------------------------
-IF OBJECT_ID('Bronze.olist_customers', 'U') IS NOT NULL
-    DROP TABLE Bronze.olist_customers;
+IF OBJECT_ID('Bronze.customers', 'U') IS NOT NULL
+    DROP TABLE Bronze.customers;
 GO
 
-CREATE TABLE Bronze.olist_customers (
+CREATE TABLE Bronze.customers (
     customer_id VARCHAR(50),
     customer_unique_id VARCHAR(50),
     customer_zip_code_prefix VARCHAR(10),
@@ -70,13 +70,13 @@ CREATE TABLE Bronze.olist_customers (
 GO
 
 -----------------------------------------------------------
--- 3. Table: olist_orders_dataset
+-- 3. Table: orders_dataset
 -----------------------------------------------------------
-IF OBJECT_ID('Bronze.olist_orders', 'U') IS NOT NULL
-    DROP TABLE Bronze.olist_orders;
+IF OBJECT_ID('Bronze.orders', 'U') IS NOT NULL
+    DROP TABLE Bronze.orders;
 GO
 
-CREATE TABLE Bronze.olist_orders (
+CREATE TABLE Bronze.orders (
     order_id VARCHAR(50),
     customer_id VARCHAR(50),
     order_status VARCHAR(20),
@@ -89,13 +89,13 @@ CREATE TABLE Bronze.olist_orders (
 GO
 
 -----------------------------------------------------------
--- 4. Table: olist_order_items_dataset
+-- 4. Table: order_items_dataset
 -----------------------------------------------------------
-IF OBJECT_ID('Bronze.olist_order_items', 'U') IS NOT NULL
-    DROP TABLE Bronze.olist_order_items;
+IF OBJECT_ID('Bronze.order_items', 'U') IS NOT NULL
+    DROP TABLE Bronze.order_items;
 GO
 
-CREATE TABLE Bronze.olist_order_items (
+CREATE TABLE Bronze.order_items (
     order_id VARCHAR(50),
     order_item_id INT,
     product_id VARCHAR(50),
@@ -107,13 +107,13 @@ CREATE TABLE Bronze.olist_order_items (
 GO
 
 -----------------------------------------------------------
--- 5. Table: olist_products_dataset
+-- 5. Table: products_dataset
 -----------------------------------------------------------
-IF OBJECT_ID('Bronze.olist_products', 'U') IS NOT NULL
-    DROP TABLE Bronze.olist_products;
+IF OBJECT_ID('Bronze.products', 'U') IS NOT NULL
+    DROP TABLE Bronze.products;
 GO
 
-CREATE TABLE Bronze.olist_products (
+CREATE TABLE Bronze.products (
     product_id VARCHAR(50),
     product_category_name NVARCHAR(100),
     product_name_lenght INT,        
@@ -127,13 +127,13 @@ CREATE TABLE Bronze.olist_products (
 GO
 
 -----------------------------------------------------------
--- 6. Table: olist_order_payments_dataset
+-- 6. Table: order_payments_dataset
 -----------------------------------------------------------
-IF OBJECT_ID('Bronze.olist_order_payments', 'U') IS NOT NULL
-    DROP TABLE Bronze.olist_order_payments;
+IF OBJECT_ID('Bronze.order_payments', 'U') IS NOT NULL
+    DROP TABLE Bronze.order_payments;
 GO
 
-CREATE TABLE Bronze.olist_order_payments (
+CREATE TABLE Bronze.order_payments (
     order_id VARCHAR(50),
     payment_sequential INT,
     payment_type VARCHAR(20),
@@ -143,13 +143,13 @@ CREATE TABLE Bronze.olist_order_payments (
 GO
 
 -----------------------------------------------------------
--- 7. Table: olist_order_reviews_dataset
+-- 7. Table: order_reviews_dataset
 -----------------------------------------------------------
-IF OBJECT_ID('Bronze.olist_order_reviews', 'U') IS NOT NULL
-    DROP TABLE Bronze.olist_order_reviews;
+IF OBJECT_ID('Bronze.order_reviews', 'U') IS NOT NULL
+    DROP TABLE Bronze.order_reviews;
 GO
 
-CREATE TABLE Bronze.olist_order_reviews (
+CREATE TABLE Bronze.order_reviews (
     review_id VARCHAR(50),
     order_id VARCHAR(50),
     review_score INT,
@@ -161,13 +161,13 @@ CREATE TABLE Bronze.olist_order_reviews (
 GO
 
 -----------------------------------------------------------
--- 8. Table: olist_sellers_dataset
+-- 8. Table: sellers_dataset
 -----------------------------------------------------------
-IF OBJECT_ID('Bronze.olist_sellers', 'U') IS NOT NULL
-    DROP TABLE Bronze.olist_sellers;
+IF OBJECT_ID('Bronze.sellers', 'U') IS NOT NULL
+    DROP TABLE Bronze.sellers;
 GO
 
-CREATE TABLE Bronze.olist_sellers (
+CREATE TABLE Bronze.sellers (
     seller_id VARCHAR(50),
     seller_zip_code_prefix VARCHAR(10),
     seller_city NVARCHAR(100),
@@ -176,13 +176,13 @@ CREATE TABLE Bronze.olist_sellers (
 GO
 
 -----------------------------------------------------------
--- 9. Table: olist_geolocation_dataset
+-- 9. Table: geolocation_dataset
 -----------------------------------------------------------
-IF OBJECT_ID('Bronze.olist_geolocation', 'U') IS NOT NULL
-    DROP TABLE Bronze.olist_geolocation;
+IF OBJECT_ID('Bronze.geolocation', 'U') IS NOT NULL
+    DROP TABLE Bronze.geolocation;
 GO
 
-CREATE TABLE Bronze.olist_geolocation (
+CREATE TABLE Bronze.geolocation (
     geolocation_zip_code_prefix VARCHAR(10),
     geolocation_lat FLOAT,
     geolocation_lng FLOAT,
