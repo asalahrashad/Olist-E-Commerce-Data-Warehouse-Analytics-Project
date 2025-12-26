@@ -1,7 +1,7 @@
 /*
 ===============================================================================
 Silver Layer Views Creation Script
-Objective: Data Cleaning & Transformation
+Objective: Data Cleaning & Transformation 
 ===============================================================================
 
 Why use Views here instead of embedding logic in Stored Procedures?
