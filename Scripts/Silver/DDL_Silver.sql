@@ -61,9 +61,6 @@ CREATE TABLE Silver.olist_products (
     product_width_cm INT,
     dwh_create_date DATETIME2 DEFAULT GETDATE() -- Audit: Load Date
 );
--- Index on Business Key (Crucial for Merge/Upsert performance)
-CREATE NONCLUSTERED INDEX IX_products_bk ON Silver.olist_products(product_id);
-GO
 
 -- 2. Table: Sellers Dimension
 IF OBJECT_ID('Silver.olist_sellers', 'U') IS NOT NULL DROP TABLE Silver.olist_sellers;
@@ -76,9 +73,6 @@ CREATE TABLE Silver.olist_sellers (
     seller_state VARCHAR(5),
     dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
--- Index on Business Key
-CREATE NONCLUSTERED INDEX IX_sellers_bk ON Silver.olist_sellers(seller_id);
-GO
 
 -- 3. Table: Customers Dimension
 IF OBJECT_ID('Silver.olist_customers', 'U') IS NOT NULL DROP TABLE Silver.olist_customers;
@@ -92,9 +86,6 @@ CREATE TABLE Silver.olist_customers (
     customer_state VARCHAR(5),
     dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
--- Index on Business Key
-CREATE NONCLUSTERED INDEX IX_customers_bk ON Silver.olist_customers(customer_id);
-GO
 
 -- 4. Table: Geolocation Dimension
 IF OBJECT_ID('Silver.olist_geolocation', 'U') IS NOT NULL DROP TABLE Silver.olist_geolocation;
@@ -108,9 +99,6 @@ CREATE TABLE Silver.olist_geolocation (
     geolocation_state VARCHAR(5),
     dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
--- Index on Zip Code
-CREATE NONCLUSTERED INDEX IX_geo_zip ON Silver.olist_geolocation(geolocation_zip_code_prefix);
-GO
 
 -- 5. Table: Category Translation (Lookup Table)
 -- Used for translating category names during the transformation phase
@@ -142,9 +130,6 @@ CREATE TABLE Silver.olist_orders (
     order_estimated_delivery_date DATETIME2,
     dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
--- Index on FK for Reporting Performance
-CREATE NONCLUSTERED INDEX IX_orders_cust_sk ON Silver.olist_orders(customer_sk);
-GO
 
 -- 7. Table: Order Items Fact (Details)
 IF OBJECT_ID('Silver.olist_order_items', 'U') IS NOT NULL DROP TABLE Silver.olist_order_items;
@@ -159,10 +144,6 @@ CREATE TABLE Silver.olist_order_items (
     freight_value DECIMAL(10, 2),
     dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
--- Indexes on FKs for Join Performance
-CREATE NONCLUSTERED INDEX IX_items_prod_sk ON Silver.olist_order_items(product_sk);
-CREATE NONCLUSTERED INDEX IX_items_sel_sk ON Silver.olist_order_items(seller_sk);
-GO
 
 -- 8. Table: Order Payments Fact
 IF OBJECT_ID('Silver.olist_order_payments', 'U') IS NOT NULL DROP TABLE Silver.olist_order_payments;
