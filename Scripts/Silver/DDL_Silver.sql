@@ -18,14 +18,14 @@ In this layer, data structures are refined to be more user-friendly and business
 
 ### 📂 Created Tables
 The script initializes the following **9 standardized tables**:
-1. `olist_orders` (formerly `olist_orders_dataset`)
-2. `olist_order_items`
-3. `olist_order_payments`
-4. `olist_products`
-5. `olist_customers`
-6. `olist_sellers`
-7. `olist_order_reviews`
-8. `olist_geolocation`
+1. `orders` (formerly `olist_orders_dataset`)
+2. `order_items`
+3. `order_payments`
+4. `products`
+5. `customers`
+6. `sellers`
+7. `order_reviews`
+8. `geolocation`
 9. `product_category_name_translation`
 
 */
@@ -46,9 +46,9 @@ Script Purpose:
 -----------------------------------------------------------
 
 -- 1. Table: Products Dimension
-IF OBJECT_ID('Silver.olist_products', 'U') IS NOT NULL DROP TABLE Silver.olist_products;
+IF OBJECT_ID('Silver.products', 'U') IS NOT NULL DROP TABLE Silver.products;
 GO
-CREATE TABLE Silver.olist_products (
+CREATE TABLE Silver.products (
     product_sk INT IDENTITY(1,1) PRIMARY KEY,   -- Surrogate Key (Internal ID)
     product_id VARCHAR(32) NOT NULL,            -- Business Key (Original GUID)
     product_category_name NVARCHAR(100),        -- Translated or Original Category Name
@@ -63,9 +63,9 @@ CREATE TABLE Silver.olist_products (
 );
 
 -- 2. Table: Sellers Dimension
-IF OBJECT_ID('Silver.olist_sellers', 'U') IS NOT NULL DROP TABLE Silver.olist_sellers;
+IF OBJECT_ID('Silver.sellers', 'U') IS NOT NULL DROP TABLE Silver.sellers;
 GO
-CREATE TABLE Silver.olist_sellers (
+CREATE TABLE Silver.sellers (
     seller_sk INT IDENTITY(1,1) PRIMARY KEY,    -- Surrogate Key
     seller_id VARCHAR(32) NOT NULL,             -- Business Key (Original GUID)
     seller_zip_code_prefix VARCHAR(10),
@@ -75,9 +75,9 @@ CREATE TABLE Silver.olist_sellers (
 );
 
 -- 3. Table: Customers Dimension
-IF OBJECT_ID('Silver.olist_customers', 'U') IS NOT NULL DROP TABLE Silver.olist_customers;
+IF OBJECT_ID('Silver.customers', 'U') IS NOT NULL DROP TABLE Silver.customers;
 GO
-CREATE TABLE Silver.olist_customers (
+CREATE TABLE Silver.customers (
     customer_sk INT IDENTITY(1,1) PRIMARY KEY,  -- Surrogate Key
     customer_id VARCHAR(32) NOT NULL,           -- Business Key (Linked to specific Order)
     customer_unique_id VARCHAR(32),             -- Real unique identifier for a customer
@@ -88,9 +88,9 @@ CREATE TABLE Silver.olist_customers (
 );
 
 -- 4. Table: Geolocation Dimension
-IF OBJECT_ID('Silver.olist_geolocation', 'U') IS NOT NULL DROP TABLE Silver.olist_geolocation;
+IF OBJECT_ID('Silver.geolocation', 'U') IS NOT NULL DROP TABLE Silver.geolocation;
 GO
-CREATE TABLE Silver.olist_geolocation (
+CREATE TABLE Silver.geolocation (
     geo_sk INT IDENTITY(1,1) PRIMARY KEY,       -- Surrogate Key
     geolocation_zip_code_prefix VARCHAR(10),    -- Business Key logic
     geolocation_lat FLOAT,
@@ -117,9 +117,9 @@ GO
 -----------------------------------------------------------
 
 -- 6. Table: Orders Fact (Header)
-IF OBJECT_ID('Silver.olist_orders', 'U') IS NOT NULL DROP TABLE Silver.olist_orders;
+IF OBJECT_ID('Silver.orders', 'U') IS NOT NULL DROP TABLE Silver.orders;
 GO
-CREATE TABLE Silver.olist_orders (
+CREATE TABLE Silver.orders (
     order_id VARCHAR(32) NOT NULL,              -- Natural Key (Maintained for Audit/Lineage)
     customer_sk INT DEFAULT -1,                 -- Foreign Key to Customer Dimension (SK)
     order_status VARCHAR(20),
@@ -132,9 +132,9 @@ CREATE TABLE Silver.olist_orders (
 );
 
 -- 7. Table: Order Items Fact (Details)
-IF OBJECT_ID('Silver.olist_order_items', 'U') IS NOT NULL DROP TABLE Silver.olist_order_items;
+IF OBJECT_ID('Silver.order_items', 'U') IS NOT NULL DROP TABLE Silver.order_items;
 GO
-CREATE TABLE Silver.olist_order_items (
+CREATE TABLE Silver.order_items (
     order_id VARCHAR(32) NOT NULL,              -- Natural Key (Link to Header)
     order_item_id INT NOT NULL,                 -- Sequence Number within the order
     product_sk INT DEFAULT -1,                  -- Foreign Key to Product Dimension (SK)
@@ -146,9 +146,9 @@ CREATE TABLE Silver.olist_order_items (
 );
 
 -- 8. Table: Order Payments Fact
-IF OBJECT_ID('Silver.olist_order_payments', 'U') IS NOT NULL DROP TABLE Silver.olist_order_payments;
+IF OBJECT_ID('Silver.order_payments', 'U') IS NOT NULL DROP TABLE Silver.order_payments;
 GO
-CREATE TABLE Silver.olist_order_payments (
+CREATE TABLE Silver.order_payments (
     order_id VARCHAR(32) NOT NULL,              -- Natural Key
     payment_sequential INT,
     payment_type VARCHAR(20),
@@ -159,9 +159,9 @@ CREATE TABLE Silver.olist_order_payments (
 GO
 
 -- 9. Table: Order Reviews Fact
-IF OBJECT_ID('Silver.olist_order_reviews', 'U') IS NOT NULL DROP TABLE Silver.olist_order_reviews;
+IF OBJECT_ID('Silver.order_reviews', 'U') IS NOT NULL DROP TABLE Silver.order_reviews;
 GO
-CREATE TABLE Silver.olist_order_reviews (
+CREATE TABLE Silver.order_reviews (
     review_id VARCHAR(32),
     order_id VARCHAR(32),                       -- Natural Key
     review_score INT,
