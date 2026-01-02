@@ -46,34 +46,33 @@ BEGIN
         ---------------------------------------------------------------------------
         -- 1. Dynamically Drop all Constraints (Primary Keys / Unique Keys)
         ---------------------------------------------------------------------------
-        -- We must use Dynamic SQL because PK names are system-generated and random.
         SELECT @sql += N'ALTER TABLE ' + QUOTENAME(CONSTRAINT_SCHEMA) + N'.' + QUOTENAME(TABLE_NAME) 
             + N' DROP CONSTRAINT ' + QUOTENAME(CONSTRAINT_NAME) + N'; '
         FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
         WHERE CONSTRAINT_SCHEMA = 'Silver' 
           AND CONSTRAINT_TYPE IN ('PRIMARY KEY', 'UNIQUE');
 
-        -- Execute the drop commands if any constraints exist
         IF @sql IS NOT NULL AND LEN(@sql) > 0
         BEGIN
             PRINT '   > Dropping Constraints (PKs/UKs)...';
             EXEC sp_executesql @sql;
         END
         
-        -- Reset variable for the next step
         SET @sql = N'';
 
         ---------------------------------------------------------------------------
-        -- 2. Drop all remaining Indexes (Non-Clustered / Columnstore)
+        -- 2. Drop all remaining Indexes (Non-Clustered / Columnstore) [FIXED HERE]
         ---------------------------------------------------------------------------
-        -- Query sys.indexes to find any index that isn't a constraint and drop it.
-        SELECT @sql += N'DROP INDEX ' + QUOTENAME(name) + N' ON ' 
-            + QUOTENAME(SCHEMA_NAME(schema_id)) + N'.' + QUOTENAME(OBJECT_NAME(object_id)) + N'; '
-        FROM sys.indexes
-        WHERE is_primary_key = 0      -- Already dropped in step 1
-          AND is_unique_constraint = 0
-          AND type_desc <> 'HEAP'     -- Do not drop the table itself
-          AND SCHEMA_NAME(schema_id) = 'Silver';
+        -- Correction: Joined sys.indexes with sys.tables and sys.schemas to get schema_id correctly
+        SELECT @sql += N'DROP INDEX ' + QUOTENAME(i.name) + N' ON ' 
+            + QUOTENAME(s.name) + N'.' + QUOTENAME(t.name) + N'; '
+        FROM sys.indexes i
+        INNER JOIN sys.tables t ON i.object_id = t.object_id
+        INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+        WHERE i.is_primary_key = 0      
+          AND i.is_unique_constraint = 0
+          AND i.type_desc <> 'HEAP'     
+          AND s.name = 'Silver';        -- Filter by Schema Name properly
 
         IF @sql IS NOT NULL AND LEN(@sql) > 0
         BEGIN
@@ -88,46 +87,44 @@ BEGIN
 
         ---------------------------------------------------------------------------
         -- 3. Indexing DIMENSION Tables (Row-Store Strategy)
-        -- Purpose: Optimize lookup performance for Joins and Filters.
         ---------------------------------------------------------------------------
         PRINT '   > Indexing Dimensions (Row-Store)...';
 
-        -- [Products]: Indexing for SK, BK, and Category filtering
-        CREATE CLUSTERED INDEX CX_products_sk ON Silver.olist_products(product_sk);
-        CREATE NONCLUSTERED INDEX IX_products_bk ON Silver.olist_products(product_id);
-        CREATE NONCLUSTERED INDEX IX_products_category ON Silver.olist_products(product_category_name);
+        -- [Products]
+        CREATE CLUSTERED INDEX CX_products_sk ON Silver.products(product_sk);
+        CREATE NONCLUSTERED INDEX IX_products_bk ON Silver.products(product_id);
+        CREATE NONCLUSTERED INDEX IX_products_category ON Silver.products(product_category_name);
 
-        -- [Customers]: Indexing for SK, BK, and Location (State/City) analysis
-        CREATE CLUSTERED INDEX CX_customers_sk ON Silver.olist_customers(customer_sk);
-        CREATE NONCLUSTERED INDEX IX_customers_bk ON Silver.olist_customers(customer_id);
-        CREATE NONCLUSTERED INDEX IX_customers_location ON Silver.olist_customers(customer_state) INCLUDE (customer_city);
+        -- [Customers]
+        CREATE CLUSTERED INDEX CX_customers_sk ON Silver.customers(customer_sk);
+        CREATE NONCLUSTERED INDEX IX_customers_bk ON Silver.customers(customer_id);
+        CREATE NONCLUSTERED INDEX IX_customers_location ON Silver.customers(customer_state) INCLUDE (customer_city);
 
-        -- [Sellers]: Indexing for SK, BK, and State distribution
-        CREATE CLUSTERED INDEX CX_sellers_sk ON Silver.olist_sellers(seller_sk);
-        CREATE NONCLUSTERED INDEX IX_sellers_bk ON Silver.olist_sellers(seller_id);
-        CREATE NONCLUSTERED INDEX IX_sellers_state ON Silver.olist_sellers(seller_state);
+        -- [Sellers]
+        CREATE CLUSTERED INDEX CX_sellers_sk ON Silver.sellers(seller_sk);
+        CREATE NONCLUSTERED INDEX IX_sellers_bk ON Silver.sellers(seller_id);
+        CREATE NONCLUSTERED INDEX IX_sellers_state ON Silver.sellers(seller_state);
 
-        -- [Geolocation]: Indexing for SK and Zip Code (Primary Join Key)
-        CREATE CLUSTERED INDEX CX_geo_sk ON Silver.olist_geolocation(geo_sk);
-        CREATE NONCLUSTERED INDEX IX_geo_zip ON Silver.olist_geolocation(geolocation_zip_code_prefix);
+        -- [Geolocation]
+        CREATE CLUSTERED INDEX CX_geo_sk ON Silver.geolocation(geo_sk);
+        CREATE NONCLUSTERED INDEX IX_geo_zip ON Silver.geolocation(geolocation_zip_code_prefix);
 
         ---------------------------------------------------------------------------
         -- 4. Indexing FACT Tables (Column-Store Strategy)
-        -- Purpose: Optimize Aggregations (SUM/AVG) and Compression for Reporting.
         ---------------------------------------------------------------------------
         PRINT '   > Indexing Facts (Column-Store)...';
 
-        -- [Orders]: Optimized for Time-Series analysis and Status checking
-        CREATE CLUSTERED COLUMNSTORE INDEX CCI_olist_orders ON Silver.olist_orders;
+        -- [Orders]
+        CREATE CLUSTERED COLUMNSTORE INDEX CCI_orders ON Silver.orders;
 
-        -- [Order Items]: The largest table. CCI is critical here for performance.
-        CREATE CLUSTERED COLUMNSTORE INDEX CCI_olist_order_items ON Silver.olist_order_items;
+        -- [Order Items]
+        CREATE CLUSTERED COLUMNSTORE INDEX CCI_order_items ON Silver.order_items;
 
-        -- [Payments]: Optimized for financial calculations
-        CREATE CLUSTERED COLUMNSTORE INDEX CCI_olist_order_payments ON Silver.olist_order_payments;
+        -- [Payments]
+        CREATE CLUSTERED COLUMNSTORE INDEX CCI_order_payments ON Silver.order_payments;
 
-        -- [Reviews]: Optimized for text storage and score analysis
-        CREATE CLUSTERED COLUMNSTORE INDEX CCI_olist_order_reviews ON Silver.olist_order_reviews;
+        -- [Reviews]
+        CREATE CLUSTERED COLUMNSTORE INDEX CCI_order_reviews ON Silver.order_reviews;
 
         PRINT '=========================================================';
         PRINT '>>> SUCCESS: All Indexes Rebuilt.';
@@ -136,7 +133,6 @@ BEGIN
 
     END TRY
     BEGIN CATCH
-        -- Capture Error Details
         SELECT 
             @ErrorMessage = ERROR_MESSAGE(),
             @ErrorSeverity = ERROR_SEVERITY(),
@@ -145,7 +141,6 @@ BEGIN
         PRINT '!!! ERROR OCCURRED !!!';
         PRINT 'Error Msg: ' + @ErrorMessage;
         
-        -- Raise the error again to ensure it is logged by the calling application/agent
         RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
     END CATCH
 END;
