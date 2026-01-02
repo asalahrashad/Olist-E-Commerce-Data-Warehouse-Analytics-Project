@@ -190,7 +190,7 @@ SELECT
     CAST(COALESCE(review_comment_title, 'No Title') AS NVARCHAR(255)) AS review_comment_title,
     
     -- Text Cleaning: Replace CHAR(13) & CHAR(10) with spaces
-    CAST(REPLACE(REPLACE(review_comment_message, CHAR(13), ' '), CHAR(10), ' ') AS NVARCHAR(MAX)) AS review_comment_message,
+    CAST(REPLACE(REPLACE(ISNULL(NULLIF(review_comment_message, ''), 'No Review'), CHAR(13), ' '), CHAR(10), ' ') AS NVARCHAR(MAX)) AS review_comment_message,
     
     TRY_CAST(review_creation_date AS DATETIME2) AS review_creation_date,
     TRY_CAST(review_answer_timestamp AS DATETIME2) AS review_answer_timestamp
