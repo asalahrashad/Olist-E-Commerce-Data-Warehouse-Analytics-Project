@@ -101,5 +101,4 @@ This layer consists of **Dimension Tables** (Context) and **Fact Tables** (Trans
 | creation_date  | DATE            | The date the review survey was sent to the customer. |
 | answer_date    | DATE            | The date the customer submitted the review answer. |
 
----
-*Generated for Olist Data Warehouse Project.*
+
