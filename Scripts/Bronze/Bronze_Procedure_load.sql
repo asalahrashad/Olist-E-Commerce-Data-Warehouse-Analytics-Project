@@ -15,6 +15,9 @@ This script creates the stored procedure `Bronze.load_bronze`, which acts as the
 * **Cross-Platform Compatibility:** Configured with `ROWTERMINATOR = '0x0a'` to correctly parse CSV files generated in Linux/Unix environments (common in Kaggle datasets).
 * **Data Freshness:** Performs a `TRUNCATE` operation before insertion to ensure the Bronze layer always reflects the exact state of the source files without duplication.
 
+> Incremental loading was intentionally not implemented, as the dataset is static and fully reprocessed.
+> This decision avoids unnecessary complexity while preserving correctness and maintainability.
+
 ### 📋 Ingestion Workflow
 The procedure iterates through the following 9 datasets:
 1. `product_category_name_translation`
