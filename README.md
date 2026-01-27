@@ -92,4 +92,4 @@ Please refer to the relevant directories (e.g., **DOCs/**, **Scripts/**, **Perfo
 
 
 ### 👤 Author
-**Ahmed Salah** Data Engineer | SQL • Data Warehousing • Analytics Engineering [LinkedIn Profile Link]
+**Ahmed Salah** Data Engineer | SQL • Data Warehousing • Analytics Engineering [https://www.linkedin.com/in/ahmed-sal4h/]
